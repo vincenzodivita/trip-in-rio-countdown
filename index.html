@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contatore Giorni</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .data-target {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .countdown {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .giorni {
+            font-size: 5em;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .label {
+            font-size: 1.5em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.9;
+        }
+
+        .dettagli {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .dettagli-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .dettagli-item:last-child {
+            border-bottom: none;
+        }
+
+        .dettagli-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .dettagli-value {
+            color: #333;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Conto alla Rovescia</h1>
+        <div class="data-target">11 Gennaio 2026</div>
+        
+        <div class="countdown">
+            <div class="giorni" id="giorni">0</div>
+            <div class="label">Giorni</div>
+        </div>
+
+        <div class="dettagli">
+            <div class="dettagli-item">
+                <span class="dettagli-label">Settimane:</span>
+                <span class="dettagli-value" id="settimane">0</span>
+            </div>
+            <!-- <div class="dettagli-item">
+                <span class="dettagli-label">Ore totali:</span>
+                <span class="dettagli-value" id="ore">0</span>
+            </div> -->
+            <div class="dettagli-item">
+                <span class="dettagli-label">Data di oggi:</span>
+                <span class="dettagli-value" id="dataOggi">-</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calcolaGiorni() {
+            const dataTarget = new Date('2026-01-11');
+            const oggi = new Date();
+            
+            // Azzera le ore per calcolare solo i giorni interi
+            oggi.setHours(0, 0, 0, 0);
+            dataTarget.setHours(0, 0, 0, 0);
+            
+            // Calcola la differenza in millisecondi
+            const differenza = dataTarget - oggi;
+            
+            // Converti in giorni
+            const giorni = Math.floor(differenza / (1000 * 60 * 60 * 24));
+            
+            // Calcola settimane
+            const settimane = Math.floor(giorni / 7);
+            
+            // Aggiorna il DOM
+            document.getElementById('giorni').textContent = giorni;
+            document.getElementById('settimane').textContent = settimane;
+            
+            // Mostra la data di oggi
+            const opzioni = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('dataOggi').textContent = oggi.toLocaleDateString('it-IT', opzioni);
+        }
+
+        // Calcola subito al caricamento
+        calcolaGiorni();
+        
+        // Aggiorna ogni minuto (nel caso la pagina resti aperta a mezzanotte)
+        setInterval(calcolaGiorni, 60000);
+    </script>
+</body>
+</html>
