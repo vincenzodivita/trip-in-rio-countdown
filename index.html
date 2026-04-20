@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contatore Giorni</title>
+    <title>Contatore Date</title>
     <style>
         * {
             margin: 0;
@@ -16,15 +16,17 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            gap: 30px; /* Spazio tra le due card */
         }
 
         .container {
             background: white;
             border-radius: 20px;
-            padding: 50px;
+            padding: 40px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             text-align: center;
             max-width: 500px;
@@ -33,50 +35,63 @@
 
         h1 {
             color: #333;
-            margin-bottom: 10px;
-            font-size: 2em;
+            margin-bottom: 5px;
+            font-size: 1.8em;
         }
 
         .data-target {
             color: #667eea;
-            font-size: 1.3em;
-            margin-bottom: 30px;
+            font-size: 1.1em;
+            margin-bottom: 20px;
             font-weight: 600;
         }
 
         .countdown {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 40px;
+            padding: 30px;
             border-radius: 15px;
-            margin: 20px 0;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        /* Stile differenziato se la data è passata */
+        .countdown.passato {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
         }
 
         .giorni {
-            font-size: 5em;
+            font-size: 4em;
             font-weight: bold;
             line-height: 1;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .label {
-            font-size: 1.5em;
+            font-size: 1.2em;
             text-transform: uppercase;
             letter-spacing: 2px;
             opacity: 0.9;
         }
 
+        .stato-testo {
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
         .dettagli {
             background: #f8f9fa;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         .dettagli-item {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
+            padding: 8px 0;
             border-bottom: 1px solid #e0e0e0;
         }
 
@@ -93,66 +108,111 @@
             color: #333;
             font-weight: 600;
         }
+
+        .data-oggi-container {
+            color: white;
+            font-weight: bold;
+            background: rgba(0,0,0,0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
     </style>
 </head>
 <body>
+
+    <div class="data-oggi-container">
+        Oggi è il: <span id="dataOggi">-</span>
+    </div>
+
     <div class="container">
-        <h1>Conto alla Rovescia</h1>
+        <h1>Evento Inverno</h1>
         <div class="data-target">11 Gennaio 2026</div>
         
-        <div class="countdown">
-            <div class="giorni" id="giorni">0</div>
+        <div class="countdown" id="card-1">
+            <span class="stato-testo" id="stato-1">MANCANO</span>
+            <div class="giorni" id="giorni-1">0</div>
             <div class="label">Giorni</div>
         </div>
 
         <div class="dettagli">
             <div class="dettagli-item">
                 <span class="dettagli-label">Settimane:</span>
-                <span class="dettagli-value" id="settimane">0</span>
+                <span class="dettagli-value" id="settimane-1">0</span>
             </div>
-            <!-- <div class="dettagli-item">
-                <span class="dettagli-label">Ore totali:</span>
-                <span class="dettagli-value" id="ore">0</span>
-            </div> -->
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Evento Estate</h1>
+        <div class="data-target">19 Luglio 2026</div>
+        
+        <div class="countdown" id="card-2">
+            <span class="stato-testo" id="stato-2">MANCANO</span>
+            <div class="giorni" id="giorni-2">0</div>
+            <div class="label">Giorni</div>
+        </div>
+
+        <div class="dettagli">
             <div class="dettagli-item">
-                <span class="dettagli-label">Data di oggi:</span>
-                <span class="dettagli-value" id="dataOggi">-</span>
+                <span class="dettagli-label">Settimane:</span>
+                <span class="dettagli-value" id="settimane-2">0</span>
             </div>
         </div>
     </div>
 
     <script>
-        function calcolaGiorni() {
-            const dataTarget = new Date('2026-01-11');
+        function aggiornaContatore(id, dataStringa) {
+            const dataTarget = new Date(dataStringa);
             const oggi = new Date();
             
-            // Azzera le ore per calcolare solo i giorni interi
+            // Azzera le ore per calcoli precisi sui giorni
             oggi.setHours(0, 0, 0, 0);
             dataTarget.setHours(0, 0, 0, 0);
             
-            // Calcola la differenza in millisecondi
             const differenza = dataTarget - oggi;
+            const msInGiorno = 1000 * 60 * 60 * 24;
             
-            // Converti in giorni
-            const giorni = Math.floor(differenza / (1000 * 60 * 60 * 24));
+            // Calcola giorni assoluti (sempre positivi)
+            let giorni = Math.floor(differenza / msInGiorno);
+            const card = document.getElementById(`card-${id}`);
+            const stato = document.getElementById(`stato-${id}`);
             
-            // Calcola settimane
+            if (differenza < 0) {
+                // DATA PASSATA
+                giorni = Math.abs(giorni);
+                stato.textContent = "TRASCORSI DA";
+                card.classList.add('passato');
+            } else if (differenza === 0) {
+                // OGGI
+                giorni = 0;
+                stato.textContent = "È OGGI!";
+                card.classList.remove('passato');
+            } else {
+                // DATA FUTURA
+                stato.textContent = "MANCANO";
+                card.classList.remove('passato');
+            }
+            
             const settimane = Math.floor(giorni / 7);
             
-            // Aggiorna il DOM
-            document.getElementById('giorni').textContent = giorni;
-            document.getElementById('settimane').textContent = settimane;
+            document.getElementById(`giorni-${id}`).textContent = giorni;
+            document.getElementById(`settimane-${id}`).textContent = settimane;
+        }
+
+        function inizializza() {
+            // Aggiorna i due contatori
+            aggiornaContatore(1, '2026-01-11');
+            aggiornaContatore(2, '2026-07-19');
             
-            // Mostra la data di oggi
+            // Mostra la data di oggi in alto
+            const oggi = new Date();
             const opzioni = { day: 'numeric', month: 'long', year: 'numeric' };
             document.getElementById('dataOggi').textContent = oggi.toLocaleDateString('it-IT', opzioni);
         }
 
-        // Calcola subito al caricamento
-        calcolaGiorni();
-        
-        // Aggiorna ogni minuto (nel caso la pagina resti aperta a mezzanotte)
-        setInterval(calcolaGiorni, 60000);
+        inizializza();
+        // Aggiorna ogni ora per sicurezza
+        setInterval(inizializza, 3600000);
     </script>
 </body>
 </html>
